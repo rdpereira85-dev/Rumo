@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rumo</title>
+<meta name="theme-color" content="#5b4bdb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rumo">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#f4f3fb; --card:#ffffff; --card2:#eeecfa; --text:#1c1a2e; --muted:#6b6886;
+  --line:#e2e0f0; --brand:#5b4bdb; --brand2:#8a7dff; --ok:#1f9d6b; --warn:#e08a1e; --bad:#d64545;
+  --shadow:0 2px 10px rgba(40,30,120,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f0e17; --card:#1a1926; --card2:#252336; --text:#ecebf7; --muted:#9a97b5;
+    --line:#2c2a3f; --brand:#8a7dff; --brand2:#b3a9ff; --shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f0e17; --card:#1a1926; --card2:#252336; --text:#ecebf7; --muted:#9a97b5;
+  --line:#2c2a3f; --brand:#8a7dff; --brand2:#b3a9ff; --shadow:0 2px 10px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;font-size:16px}
+body{padding:env(safe-area-inset-top) 0 calc(76px + env(safe-area-inset-bottom));min-height:100vh}
+main{max-width:560px;margin:0 auto;padding:12px 16px 24px}
+h1{font-size:26px;margin:8px 0 4px}
+h2{font-size:18px;margin:22px 0 10px}
+h3{font-size:16px;margin:0}
+p{margin:4px 0}
+.muted{color:var(--muted);font-size:14px}
+.card{background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.grow{flex:1;min-width:0}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:600;background:var(--brand);color:#fff;cursor:pointer}
+.btn.ghost{background:var(--card2);color:var(--text)}
+.btn.small{padding:8px 12px;font-size:14px}
+.btn.danger{background:var(--bad)}
+.btn.block{width:100%}
+.iconbtn{border:0;background:transparent;color:var(--muted);font-size:20px;padding:6px 8px;cursor:pointer}
+input,textarea,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);font-size:16px;font-family:inherit}
+textarea{min-height:80px;resize:vertical}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:12px 0 6px}
+.bar{height:10px;border-radius:99px;background:var(--card2);overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:99px;transition:width .4s}
+.bar.ok>i{background:var(--ok)}
+.pct{font-weight:700;font-variant-numeric:tabular-nums}
+.hero{background:linear-gradient(135deg,var(--brand),#a06bff);color:#fff;border-radius:20px;padding:16px;margin-bottom:12px}
+.hero .bar{background:rgba(255,255,255,.25)}
+.hero .bar>i{background:#fff}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{background:rgba(255,255,255,.15);border-radius:12px;padding:8px;text-align:center}
+.stat b{display:block;font-size:20px}
+.stat span{font-size:12px;opacity:.9}
+.tag{display:inline-block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;font-size:12px;padding:3px 8px;border-radius:99px;background:var(--card2);color:var(--muted)}
+.ring{width:54px;height:54px;flex:none}
+.task{border-top:1px solid var(--line);padding:10px 0}
+.task:first-child{border-top:0}
+.check{width:26px;height:26px;border-radius:8px;border:2px solid var(--brand);flex:none;display:grid;place-items:center;background:transparent;color:#fff;font-size:15px;cursor:pointer;padding:0}
+.check.on{background:var(--ok);border-color:var(--ok)}
+.check.sm{width:22px;height:22px;border-radius:6px;font-size:13px}
+.done-t{text-decoration:line-through;color:var(--muted)}
+.subs{margin:8px 0 0 36px}
+.sub{padding:5px 0}
+.weight{font-size:12px;color:var(--warn);letter-spacing:1px}
+.focus-star{color:var(--warn)}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav button{border:0;background:none;color:var(--muted);font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 10px;cursor:pointer}
+nav button b{font-size:22px;font-weight:400}
+nav button.on{color:var(--brand)}
+.fab{position:fixed;right:18px;bottom:calc(86px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-size:30px;box-shadow:0 6px 18px rgba(91,75,219,.4);z-index:4;cursor:pointer}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom))}
+.sheet .grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 10px}
+.tip{background:var(--card2);border-left:4px solid var(--brand);border-radius:10px;padding:10px 12px;font-size:14px;margin:10px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:99px;padding:8px 12px;font-size:14px;cursor:pointer}
+.chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.badge{display:flex;gap:12px;align-items:center}
+.badge .em{font-size:30px;width:48px;height:48px;border-radius:14px;background:var(--card2);display:grid;place-items:center}
+.badge.locked{opacity:.4;filter:grayscale(1)}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:20;box-shadow:var(--shadow);max-width:90vw;text-align:center}
+.empty{text-align:center;padding:28px 10px;color:var(--muted)}
+.empty .big{font-size:44px}
+.seg{display:flex;background:var(--card2);border-radius:12px;padding:3px}
+.seg button{flex:1;border:0;background:transparent;color:var(--text);padding:9px;border-radius:10px;font-size:14px;cursor:pointer}
+.seg button.on{background:var(--card);box-shadow:var(--shadow);font-weight:600}
+.back{border:0;background:none;color:var(--brand);font-size:16px;padding:8px 0;cursor:pointer}
+.confetti{position:fixed;top:-10px;width:9px;height:14px;z-index:30;pointer-events:none;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.7}}
+.addline{display:flex;gap:8px;margin-top:8px}
+.addline input{padding:9px 10px;font-size:15px}
+.off{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:6px}
+.off.no{background:var(--warn)}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<nav id="nav">
+  <button data-tab="home"><b>⌂</b>Início</button>
+  <button data-tab="projects"><b>▦</b>Projetos</button>
+  <button data-tab="badges"><b>★</b>Conquistas</button>
+  <button data-tab="settings"><b>⚙</b>Ajustes</button>
+</nav>
+<button class="fab" id="fab" aria-label="Novo projeto">+</button>
+
+<script>
+/* ===================== Rumo — app de projetos gamificado ===================== */
+const KEY = 'rumo-v1';
+const VERSION = '1.0.0';
+const CATS = {
+  app:   {label:'App / Dev', em:'📱'},
+  ia:    {label:'Treino de IA', em:'🤖'},
+  canal: {label:'Conteúdo / Canal', em:'🎬'},
+  renda: {label:'Renda extra', em:'💡'},
+  outro: {label:'Outro', em:'🎯'}
+};
+const TEMPLATES = {
+  app: [
+    {t:'Definir o escopo do MVP', w:2, s:['Escrever o problema que o app resolve em 1 frase','Listar as 3 funções essenciais','Listar o que fica para a versão 2']},
+    {t:'Desenhar as telas', w:1, s:['Rabiscar as telas no papel','Definir o fluxo entre as telas']},
+    {t:'Construir a primeira versão', w:3, s:['Criar o repositório no GitHub','Pedir ao Claude a estrutura inicial','Implementar função 1','Implementar função 2','Implementar função 3']},
+    {t:'Testar no celular', w:2, s:['Instalar pela Tela de Início','Anotar bugs e ajustes','Corrigir os 3 principais']},
+    {t:'Publicar e usar por 1 semana', w:1, s:['Publicar no GitHub Pages','Usar todo dia e anotar melhorias']}
+  ],
+  ia: [
+    {t:'Organizar as plataformas', w:1, s:['Listar plataformas em que estou cadastrado','Atualizar perfil e disponibilidade']},
+    {t:'Passar nas qualificações', w:3, s:['Escolher 1 projeto/qualificação disponível','Ler as diretrizes com atenção','Fazer o teste']},
+    {t:'Criar rotina fixa', w:2, s:['Definir horário fixo de trabalho','Definir meta semanal de horas','Preparar ambiente de gravação']},
+    {t:'Acompanhar resultados', w:1, s:['Registrar horas trabalhadas na semana','Revisar feedbacks recebidos']}
+  ],
+  canal: [
+    {t:'Planejar o vídeo', w:2, s:['Definir tema e título','Escrever roteiro em tópicos','Definir a thumbnail']},
+    {t:'Gravar', w:2, s:['Preparar cenário e áudio','Gravar o vídeo']},
+    {t:'Editar', w:3, s:['Cortes principais','Legendas e textos','Exportar']},
+    {t:'Publicar e divulgar', w:1, s:['Subir com descrição e tags','Cortar 1 Short/Reels do vídeo']}
+  ],
+  renda: [
+    {t:'Validar a ideia', w:2, s:['Escrever quem é o cliente','Pesquisar 3 concorrentes','Definir o preço inicial']},
+    {t:'Montar a oferta', w:2, s:['Criar perfil/página','Preparar 1 exemplo ou portfólio']},
+    {t:'Conseguir o primeiro cliente', w:3, s:['Listar 10 contatos/possíveis clientes','Enviar 5 mensagens','Fazer follow-up']}
+  ],
+  outro: [
+    {t:'Definir o resultado final', w:1, s:['Escrever como saberei que terminei','Definir prazo']},
+    {t:'Dar o primeiro passo', w:2, s:['Separar 25 minutos na agenda','Executar o primeiro passo']},
+    {t:'Revisar e ajustar', w:1, s:['Ver o que funcionou','Planejar a próxima etapa']}
+  ]
+};
+const BADGES = [
+  {id:'first', em:'🌱', name:'Primeiro passo', desc:'Conclua sua primeira subtarefa ou tarefa', test:s=>s.stats.actions>=1},
+  {id:'plan', em:'🗺️', name:'Planejador', desc:'Crie um projeto com 5+ tarefas', test:s=>s.projects.some(p=>p.tasks.length>=5)},
+  {id:'streak3', em:'🔥', name:'Aquecendo', desc:'3 dias seguidos de avanço', test:s=>streak(s)>=3},
+  {id:'streak7', em:'⚡', name:'Semana imparável', desc:'7 dias seguidos de avanço', test:s=>streak(s)>=7},
+  {id:'streak30', em:'🏔️', name:'Disciplina de aço', desc:'30 dias seguidos de avanço', test:s=>streak(s)>=30},
+  {id:'tasks10', em:'✅', name:'Executor', desc:'Conclua 10 tarefas', test:s=>s.stats.tasksDone>=10},
+  {id:'tasks50', em:'🏅', name:'Máquina de entregas', desc:'Conclua 50 tarefas', test:s=>s.stats.tasksDone>=50},
+  {id:'half', em:'🌓', name:'Meio caminho', desc:'Leve um projeto a 50%', test:s=>s.projects.some(p=>projPct(p)>=50)},
+  {id:'proj1', em:'🏆', name:'Projeto entregue', desc:'Conclua um projeto (100%)', test:s=>s.stats.projectsDone>=1},
+  {id:'proj3', em:'👑', name:'Tirou do papel', desc:'Conclua 3 projetos', test:s=>s.stats.projectsDone>=3},
+  {id:'lvl5', em:'🚀', name:'Nível 5', desc:'Alcance o nível 5', test:s=>level(s.xp).lvl>=5},
+  {id:'claude', em:'🧠', name:'Parceria com o Claude', desc:'Importe tarefas geradas pelo Claude', test:s=>s.stats.imports>=1}
+];
+const QUOTES = ['Feito é melhor que perfeito.','Uma subtarefa de cada vez.','25 minutos agora valem mais que 3 horas "depois".','Não quebre a sequência 🔥','Progresso pequeno ainda é progresso.','Comece pelo passo mais fácil.'];
+
+/* ---------- Estado ---------- */
+const uid = () => Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3);
+const today = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+function fresh(){ return {projects:[], xp:0, log:{}, badges:[], theme:'auto', focus:{date:'',ids:[]}, stats:{actions:0,tasksDone:0,projectsDone:0,imports:0}, version:VERSION}; }
+let S;
+try { S = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY)||'null')||{}); } catch(e){ S = fresh(); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ toast('Não consegui salvar no aparelho'); } }
+
+/* ---------- Cálculos ---------- */
+function taskPct(t){ if(t.subs && t.subs.length){ return t.subs.filter(s=>s.done).length/t.subs.length*100; } return t.done?100:0; }
+function projPct(p){ if(!p.tasks.length) return 0; let w=0,d=0; p.tasks.forEach(t=>{const wt=t.weight||1; w+=wt; d+=wt*taskPct(t)/100;}); return Math.round(d/w*100); }
+function level(xp){ let lvl=1, need=100, acc=0; while(xp>=acc+need){ acc+=need; lvl++; need=Math.round(need*1.25); } return {lvl, cur:xp-acc, need}; }
+const TITLES = ['Iniciante','Aprendiz','Construtor','Focado','Executor','Estrategista','Mestre de projetos','Lenda'];
+const lvlTitle = l => TITLES[Math.min(TITLES.length-1, Math.floor((l-1)/2))];
+function streak(s){ s=s||S; let n=0; const d=new Date(); if(!s.log[today()]) d.setDate(d.getDate()-1);
+  while(true){ const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); if(s.log[k]){n++; d.setDate(d.getDate()-1);} else break; } return n; }
+function daysLeft(p){ if(!p.deadline) return null; return Math.ceil((new Date(p.deadline+'T23:59')-new Date())/86400000); }
+function findTask(id){ for(const p of S.projects){ const t=p.tasks.find(x=>x.id===id); if(t) return {p,t}; } return null; }
+
+/* ---------- Gamificação ---------- */
+function gain(xp, msg){
+  const before = level(S.xp).lvl;
+  S.xp = Math.max(0, S.xp + xp);
+  if(xp>0){ S.log[today()] = (S.log[today()]||0)+1; S.stats.actions++; }
+  const after = level(S.xp).lvl;
+  if(after>before){ confetti(); toast('🎉 Subiu para o nível '+after+' — '+lvlTitle(after)+'!'); }
+  else if(msg) toast(msg);
+  checkBadges();
+}
+function checkBadges(){
+  BADGES.forEach(b=>{ if(!S.badges.includes(b.id) && b.test(S)){ S.badges.push(b.id); setTimeout(()=>{ confetti(); toast(b.em+' Conquista: '+b.name); }, 900); } });
+}
+function afterTaskChange(p, t, wasDone){
+  const nowDone = taskPct(t)===100;
+  if(nowDone && !wasDone){ t.done=true; t.doneAt=Date.now(); S.stats.tasksDone++; gain(10*(t.weight||1), '✅ Tarefa concluída! +'+(10*(t.weight||1))+' XP'); }
+  else if(!nowDone && wasDone){ t.done=false; S.stats.tasksDone=Math.max(0,S.stats.tasksDone-1); S.xp=Math.max(0,S.xp-10*(t.weight||1)); }
+  const pct = projPct(p);
+  if(pct===100 && !p.completed){ p.completed=Date.now(); S.stats.projectsDone++; gain(100); setTimeout(()=>{confetti();confetti();toast('🏆 Projeto concluído! +100 XP');},300); }
+  else if(pct<100 && p.completed){ p.completed=null; S.stats.projectsDone=Math.max(0,S.stats.projectsDone-1); S.xp=Math.max(0,S.xp-100); }
+}
+
+/* ---------- UI helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(m){ const el=document.createElement('div'); el.className='toast'; el.textContent=m; document.body.appendChild(el); setTimeout(()=>el.remove(), 2600); }
+function confetti(){ const cols=['#5b4bdb','#a06bff','#1f9d6b','#e08a1e','#ff5d8f','#3fb5ff']; for(let i=0;i<40;i++){ const c=document.createElement('i'); c.className='confetti'; c.style.left=Math.random()*100+'vw'; c.style.background=cols[i%cols.length]; c.style.animationDelay=Math.random()*.4+'s'; c.style.borderRadius=Math.random()>.5?'50%':'2px'; document.body.appendChild(c); setTimeout(()=>c.remove(),2200);} if(navigator.vibrate) navigator.vibrate(30); }
+function ring(pct, size=54){ const r=(size-8)/2, c=2*Math.PI*r, off=c*(1-pct/100);
+  return `<svg class="ring" viewBox="0 0 ${size} ${size}" style="width:${size}px;height:${size}px"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--card2)" stroke-width="6"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${pct===100?'var(--ok)':'var(--brand)'}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 ${size/2} ${size/2})"/><text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" font-size="${size/4.2}" font-weight="700" fill="var(--text)">${pct}%</text></svg>`; }
+function bar(pct, ok){ return `<div class="bar ${ok?'ok':''}"><i style="width:${pct}%"></i></div>`; }
+function applyTheme(){ const r=document.documentElement; if(S.theme==='auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', S.theme);
+  const dark = S.theme==='dark' || (S.theme==='auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.querySelector('meta[name=theme-color]').content = dark?'#0f0e17':'#5b4bdb'; }
+
+/* ---------- Navegação ---------- */
+let view = {tab:'home', pid:null};
+function go(tab, pid=null){ view={tab,pid}; render(); window.scrollTo(0,0); }
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.tab));
+$('#fab').onclick = ()=> view.pid ? openTaskForm(view.pid) : openProjectForm();
+
+function render(){
+  applyTheme();
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on', b.dataset.tab===view.tab));
+  $('#fab').style.display = (view.tab==='home'||view.tab==='projects') ? 'block':'none';
+  $('#fab').setAttribute('aria-label', view.pid?'Nova tarefa':'Novo projeto');
+  const app=$('#app');
+  if(view.pid) app.innerHTML = projectView(S.projects.find(p=>p.id===view.pid));
+  else app.innerHTML = ({home:homeView, projects:projectsView, badges:badgesView, settings:settingsView}[view.tab])();
+  bind();
+}
+
+/* ---------- Telas ---------- */
+function homeView(){
+  const L=level(S.xp), st=streak(), act=S.projects.filter(p=>!p.completed);
+  if(S.focus.date!==today()) S.focus={date:today(), ids:S.focus.ids.filter(id=>{const f=findTask(id); return f && !f.t.done;})};
+  const focus = S.focus.ids.map(findTask).filter(Boolean);
+  const todayCount = S.log[today()]||0;
+  const totalPct = act.length ? Math.round(act.reduce((a,p)=>a+projPct(p),0)/act.length) : 0;
+  return `
+  <div class="row between"><div><p class="muted">${saudacao()}, Rafael</p><h1>Seu rumo de hoje</h1></div></div>
+  <div class="hero">
+    <div class="row between"><div><b style="font-size:18px">Nível ${L.lvl} · ${lvlTitle(L.lvl)}</b><p style="opacity:.9;font-size:13px">${L.cur} / ${L.need} XP para o próximo nível</p></div><div style="font-size:34px">${st>0?'🔥':'💤'}</div></div>
+    <div style="margin-top:10px">${bar(Math.round(L.cur/L.need*100))}</div>
+    <div class="stats">
+      <div class="stat"><b>${st}</b><span>dias seguidos</span></div>
+      <div class="stat"><b>${todayCount}</b><span>avanços hoje</span></div>
+      <div class="stat"><b>${totalPct}%</b><span>média ativos</span></div>
+    </div>
+  </div>
+  <div class="tip">💬 ${QUOTES[new Date().getDate()%QUOTES.length]}${st>0&&!S.log[today()]?' <b>Faça 1 avanço hoje para manter sua sequência de '+st+' dias.</b>':''}</div>
+
+  <h2>⭐ Foco do dia</h2>
+  <div class="card">${focus.length ? focus.map(({p,t})=>taskRow(p,t,true)).join('') :
+    `<p class="muted">Escolha até 3 tarefas para hoje tocando na ☆ dentro de um projeto. Menos é mais: foco em poucas coisas.</p>`}</div>
+
+  <h2>Projetos ativos</h2>
+  ${act.length ? act.map(projectCard).join('') : emptyProjects()}
+  `;
+}
+function saudacao(){ const h=new Date().getHours(); return h<12?'Bom dia':h<18?'Boa tarde':'Boa noite'; }
+function emptyProjects(){ return `<div class="card empty"><div class="big">🧭</div><p><b>Nenhum projeto ainda</b></p><p>Toque em + para registrar seu primeiro projeto. O Rumo te guia na criação das tarefas.</p><br><button class="btn" data-act="newproj">Criar projeto</button></div>`; }
+function projectCard(p){
+  const pct=projPct(p), done=p.tasks.filter(t=>t.done).length, dl=daysLeft(p), c=CATS[p.cat]||CATS.outro;
+  const next = p.tasks.find(t=>!t.done);
+  return `<div class="card" data-open="${p.id}" style="cursor:pointer"><div class="row">${ring(pct)}<div class="grow">
+    <h3>${c.em} ${esc(p.name)}</h3>
+    <p class="muted">${done}/${p.tasks.length} tarefas${dl!==null?` · ${dl<0?'<span style="color:var(--bad)">prazo vencido</span>':dl===0?'vence hoje':dl+' dias restantes'}`:''}</p>
+    ${next?`<p class="muted" style="font-size:13px">Próximo: ${esc(next.title)}</p>`:p.tasks.length?'<p style="color:var(--ok);font-size:13px">✔ Tudo concluído</p>':'<p class="muted" style="font-size:13px">Adicione tarefas</p>'}
+  </div><span class="muted">›</span></div></div>`;
+}
+function projectsView(){
+  const act=S.projects.filter(p=>!p.completed), fin=S.projects.filter(p=>p.completed);
+  return `<h1>Projetos</h1><p class="muted">${act.length} ativos · ${fin.length} concluídos</p><br>
+  ${act.length?act.map(projectCard).join(''):emptyProjects()}
+  ${fin.length?`<h2>🏆 Concluídos</h2>${fin.map(projectCard).join('')}`:''}`;
+}
+function projectView(p){
+  if(!p){ view.pid=null; return projectsView(); }
+  const pct=projPct(p), c=CATS[p.cat]||CATS.outro, dl=daysLeft(p);
+  const remainingW = p.tasks.filter(t=>!t.done).reduce((a,t)=>a+(t.weight||1)*(1-taskPct(t)/100),0);
+  return `<button class="back" data-act="back">‹ Voltar</button>
+  <div class="card"><div class="row">${ring(pct,72)}<div class="grow">
+    <span class="tag">${c.em} ${c.label}</span><h1 style="font-size:22px">${esc(p.name)}</h1>
+    ${p.goal?`<p class="muted">🎯 ${esc(p.goal)}</p>`:''}
+  </div><button class="iconbtn" data-act="editproj" aria-label="Editar">✎</button></div>
+  ${p.why?`<div class="tip">❤️ <b>Por que importa:</b> ${esc(p.why)}</div>`:''}
+  <p class="muted">${p.tasks.filter(t=>t.done).length} de ${p.tasks.length} tarefas · ${dl!==null?(dl<0?'prazo vencido':dl+' dias até o prazo'):'sem prazo'}${remainingW>0?` · faltam ~${Math.ceil(remainingW*10)} XP`:''}</p>
+  ${dl!==null && dl>0 && pct<100 ? `<p class="muted">Ritmo sugerido: ${Math.max(1,Math.ceil(p.tasks.reduce((a,t)=>a+(t.subs.length? t.subs.filter(s=>!s.done).length : (t.done?0:1)),0)/dl))} passo(s) por dia</p>`:''}
+  </div>
+
+  <div class="row" style="gap:8px;flex-wrap:wrap">
+    <button class="btn small" data-act="newtask">+ Tarefa</button>
+    ${p.tasks.length<3?`<button class="btn small ghost" data-act="template">✨ Usar roteiro sugerido</button>`:''}
+    <button class="btn small ghost" data-act="claude">🧠 Planejar com o Claude</button>
+  </div>
+  ${coachTip(p)}
+  <h2>Tarefas</h2>
+  <div class="card">${p.tasks.length? p.tasks.map(t=>taskRow(p,t,false)).join('') : '<p class="muted">Nenhuma tarefa. Use o roteiro sugerido ou peça ao Claude para quebrar o projeto em etapas.</p>'}</div>
+  `;
+}
+function coachTip(p){
+  const tips=[];
+  if(!p.tasks.length) tips.push('Comece quebrando o projeto em 3 a 6 grandes etapas. Cada etapa vira uma tarefa.');
+  const big=p.tasks.find(t=>!t.done && !t.subs.length && (t.weight||1)>=2);
+  if(big) tips.push(`A tarefa “${esc(big.title)}” é grande e não tem subtarefas. Quebre em passos de até 25 minutos.`);
+  const vague=p.tasks.find(t=>!t.done && t.title.split(' ').length<2);
+  if(vague) tips.push(`“${esc(vague.title)}” está vaga. Comece com um verbo: <i>Escrever…, Criar…, Enviar…</i>`);
+  if(p.tasks.length && !S.focus.ids.some(id=>p.tasks.some(t=>t.id===id)) && p.tasks.some(t=>!t.done)) tips.push('Marque uma tarefa deste projeto como ☆ Foco do dia.');
+  if(!p.deadline) tips.push('Definir um prazo ajuda a manter o ritmo. Toque em ✎ para adicionar.');
+  return tips.length?`<div class="tip">🧭 <b>Dica do Rumo:</b> ${tips[0]}</div>`:'';
+}
+function taskRow(p,t,inFocus){
+  const pct=Math.round(taskPct(t)), isF=S.focus.ids.includes(t.id);
+  return `<div class="task" data-tid="${t.id}" data-pid="${p.id}">
+    <div class="row">
+      <button class="check ${t.done?'on':''}" data-act="toggletask" aria-label="Concluir">${t.done?'✓':''}</button>
+      <div class="grow">
+        <div class="${t.done?'done-t':''}" style="font-weight:600">${esc(t.title)}</div>
+        <div class="row" style="gap:8px;margin-top:2px;flex-wrap:wrap">${inFocus?`<span class="tag">${(CATS[p.cat]||CATS.outro).em} ${esc(p.name)}</span>`:''}<span class="weight" title="Esforço">${'●'.repeat(t.weight||1)}${'○'.repeat(3-(t.weight||1))}</span>${t.subs.length?`<span class="muted" style="font-size:12px">${t.subs.filter(s=>s.done).length}/${t.subs.length} · ${pct}%</span>`:''}</div>
+        ${t.subs.length&&!t.done?`<div style="margin-top:6px">${bar(pct)}</div>`:''}
+      </div>
+      <button class="iconbtn ${isF?'focus-star':''}" data-act="focus" aria-label="Foco do dia">${isF?'★':'☆'}</button>
+      ${inFocus?'':`<button class="iconbtn" data-act="edittask" aria-label="Editar">⋯</button>`}
+    </div>
+    ${inFocus?'':`<div class="subs">${t.subs.map(s=>`<div class="sub row" data-sid="${s.id}"><button class="check sm ${s.done?'on':''}" data-act="togglesub">${s.done?'✓':''}</button><span class="grow ${s.done?'done-t':''}" style="font-size:15px">${esc(s.title)}</span></div>`).join('')}
+      ${t.done?'':`<div class="addline"><input placeholder="+ Subtarefa (ex: Escrever…)" data-addsub="${t.id}" enterkeyhint="done"><button class="btn small ghost" data-act="addsub">Add</button></div>`}</div>`}
+  </div>`;
+}
+function badgesView(){
+  const got=S.badges.length, L=level(S.xp);
+  return `<h1>Conquistas</h1><p class="muted">${got} de ${BADGES.length} desbloqueadas · ${S.xp} XP total · Nível ${L.lvl}</p><br>
+  <div class="card">${heatmap()}</div>
+  ${BADGES.map(b=>`<div class="card badge ${S.badges.includes(b.id)?'':'locked'}"><div class="em">${b.em}</div><div><h3>${b.name}</h3><p class="muted">${b.desc}</p></div></div>`).join('')}
+  <div class="card"><h3>Como ganhar XP</h3><p class="muted">Subtarefa concluída: +5 XP · Tarefa: +10 XP por nível de esforço (●) · Projeto 100%: +100 XP · Fazer pelo menos 1 avanço por dia mantém a 🔥 sequência.</p></div>`;
+}
+function heatmap(){
+  const days=[]; const d=new Date(); d.setDate(d.getDate()-27);
+  for(let i=0;i<28;i++){ const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); days.push(S.log[k]||0); d.setDate(d.getDate()+1); }
+  const cell=n=>`<div style="aspect-ratio:1;border-radius:6px;background:${n===0?'var(--card2)':n<3?'color-mix(in srgb,var(--brand) 40%,var(--card2))':n<6?'color-mix(in srgb,var(--brand) 70%,var(--card2))':'var(--brand)'}"></div>`;
+  return `<h3>Últimos 28 dias</h3><p class="muted" style="margin-bottom:8px">Cada quadrado é um dia; mais forte = mais avanços</p><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px">${days.map(cell).join('')}</div>`;
+}
+function settingsView(){
+  return `<h1>Ajustes</h1>
+  <div class="card"><h3>Tema</h3><br><div class="seg">
+    ${[['auto','Automático'],['light','Claro'],['dark','Escuro']].map(([k,l])=>`<button class="${S.theme===k?'on':''}" data-theme-set="${k}">${l}</button>`).join('')}
+  </div></div>
+  <div class="card"><h3>Conexão</h3><p class="muted"><span class="off ${navigator.onLine?'':'no'}"></span>${navigator.onLine?'On-line':'Off-line'} — o app funciona sem internet. Seus dados ficam salvos neste aparelho.</p></div>
+  <div class="card"><h3>Backup dos dados</h3><p class="muted">Exporte um arquivo de backup de vez em quando. Ele também serve para levar seus projetos para outro aparelho.</p><br>
+    <div class="row"><button class="btn small" data-act="export">⬇ Exportar backup</button><button class="btn small ghost" data-act="import">⬆ Importar backup</button></div>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none"></div>
+  <div class="card"><h3>🧠 Integração com o Claude</h3><p class="muted">Dentro de cada projeto, “Planejar com o Claude” copia um pedido pronto. Cole no Claude, copie a resposta e importe: as tarefas e subtarefas entram sozinhas.</p><br>
+    <button class="btn small ghost" data-act="claudeall">Copiar relatório geral para o Claude</button>
+    <p class="muted" style="margin-top:10px">Para mudar o próprio app, peça ao Claude no chat ou no Claude Code usando o repositório do GitHub (veja o README).</p></div>
+  <div class="card"><h3>Zona de perigo</h3><br><button class="btn small danger" data-act="reset">Apagar todos os dados</button></div>
+  <p class="muted" style="text-align:center">Rumo v${VERSION}</p>`;
+}
+
+/* ---------- Eventos ---------- */
+function bind(){
+  document.querySelectorAll('[data-open]').forEach(el=>el.onclick=()=>go('projects', el.dataset.open));
+  document.querySelectorAll('[data-theme-set]').forEach(el=>el.onclick=()=>{ S.theme=el.dataset.themeSet; save(); render(); });
+  document.querySelectorAll('[data-addsub]').forEach(el=>el.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); addSub(el); } });
+  document.querySelectorAll('[data-act]').forEach(el=>el.onclick=e=>{
+    e.stopPropagation();
+    const a=el.dataset.act, row=el.closest('.task'), pid=row?.dataset.pid || view.pid;
+    const p=S.projects.find(x=>x.id===pid), t=row&&p?p.tasks.find(x=>x.id===row.dataset.tid):null;
+    switch(a){
+      case 'newproj': openProjectForm(); break;
+      case 'back': go('projects'); break;
+      case 'editproj': openProjectForm(p); break;
+      case 'newtask': openTaskForm(p.id); break;
+      case 'edittask': openTaskForm(p.id, t); break;
+      case 'template': applyTemplate(p); break;
+      case 'claude': openClaude(p); break;
+      case 'claudeall': copyText(generalReport(), 'Relatório copiado! Cole no Claude.'); break;
+      case 'toggletask': toggleTask(p,t); break;
+      case 'togglesub': toggleSub(p,t,el.closest('.sub').dataset.sid); break;
+      case 'addsub': addSub(row.querySelector('[data-addsub]')); break;
+      case 'focus': toggleFocus(t); break;
+      case 'export': exportData(); break;
+      case 'import': $('#importFile').click(); break;
+      case 'reset': if(confirm('Apagar todos os projetos, XP e conquistas? Isso não pode ser desfeito.')){ const th=S.theme; S=fresh(); S.theme=th; save(); go('home'); } break;
+    }
+  });
+  const f=$('#importFile'); if(f) f.onchange=importData;
+}
+function toggleTask(p,t){
+  const was=t.done;
+  if(t.subs.length) t.subs.forEach(s=>s.done=!was);
+  else t.done=!was;
+  afterTaskChange(p,t,was);
+  if(t.done) S.focus.ids=S.focus.ids.filter(i=>i!==t.id);
+  save(); render();
+}
+function toggleSub(p,t,sid){
+  const s=t.subs.find(x=>x.id===sid), was=t.done; s.done=!s.done;
+  if(s.done) gain(5, '+5 XP'); else S.xp=Math.max(0,S.xp-5);
+  afterTaskChange(p,t,was); save(); render();
+}
+function addSub(input){
+  const v=input.value.trim(); if(!v) return;
+  const f=findTask(input.dataset.addsub); if(!f) return;
+  const was=f.t.done; f.t.subs.push({id:uid(), title:v, done:false});
+  afterTaskChange(f.p,f.t,was); save(); render();
+  const again=document.querySelector(`[data-addsub="${f.t.id}"]`); if(again) again.focus();
+}
+function toggleFocus(t){
+  const i=S.focus.ids.indexOf(t.id);
+  if(i>=0) S.focus.ids.splice(i,1);
+  else { if(t.done) return toast('Essa tarefa já está concluída'); if(S.focus.ids.length>=3) return toast('Máximo de 3 focos por dia. Termine um primeiro 😉'); S.focus.ids.push(t.id); S.focus.date=today(); toast('⭐ Adicionada ao Foco do dia'); }
+  save(); render();
+}
+
+/* ---------- Formulários (sheets) ---------- */
+function sheet(html, onReady){
+  const bg=document.createElement('div'); bg.className='sheet-bg';
+  bg.innerHTML=`<div class="sheet"><div class="grab"></div>${html}</div>`;
+  bg.onclick=e=>{ if(e.target===bg) bg.remove(); };
+  document.body.appendChild(bg); onReady && onReady(bg, ()=>bg.remove());
+}
+function openProjectForm(p){
+  const isNew=!p; let step=0;
+  const d = p ? {...p} : {name:'', cat:'app', goal:'', why:'', deadline:'', first:''};
+  const steps = [
+    ()=>`<h2 style="margin-top:0">${isNew?'Novo projeto':'Editar projeto'}</h2>
+      <label>Nome do projeto</label><input id="f-name" value="${esc(d.name)}" placeholder="Ex: App de inspeção de torres">
+      <label>Tipo</label><div class="chips">${Object.entries(CATS).map(([k,c])=>`<button class="chip ${d.cat===k?'on':''}" data-cat="${k}">${c.em} ${c.label}</button>`).join('')}</div>
+      <label>Prazo (opcional)</label><input id="f-deadline" type="date" value="${esc(d.deadline)}">`,
+    ()=>`<h2 style="margin-top:0">🎯 Como você saberá que terminou?</h2>
+      <div class="tip">Um projeto sem “linha de chegada” nunca termina. Descreva o resultado concreto.</div>
+      <label>Resultado final</label><textarea id="f-goal" placeholder="Ex: App instalado no meu iPhone, tirando fotos e gerando relatório PDF">${esc(d.goal)}</textarea>
+      <label>Por que isso importa para você?</label><textarea id="f-why" placeholder="Ex: Ser meu primeiro trabalho cobrado como desenvolvedor">${esc(d.why)}</textarea>`,
+    ()=>`<h2 style="margin-top:0">👣 Qual o primeiro passo?</h2>
+      <div class="tip">Algo que você consegue fazer em até 25 minutos, começando com um verbo.</div>
+      <label>Primeiro passo</label><input id="f-first" value="${esc(d.first)}" placeholder="Ex: Listar as 3 funções essenciais do app">
+      <label>Montar as tarefas</label>
+      <div class="chips"><button class="chip on" data-tpl="1">✨ Usar roteiro sugerido de ${CATS[d.cat].label}</button><button class="chip" data-tpl="0">Começar do zero</button></div>
+      <p class="muted" style="margin-top:8px">Você pode editar tudo depois ou pedir ao Claude um plano sob medida.</p>`
+  ];
+  const total = isNew ? 3 : 2;
+  sheet('<div id="pf"></div>', (bg, close)=>{
+    let useTpl=true;
+    const draw=()=>{
+      bg.querySelector('#pf').innerHTML = steps[step]() + `
+        <p class="muted" style="text-align:center;margin-top:14px">Passo ${step+1} de ${total}</p>
+        <div class="row" style="margin-top:8px">${step>0?'<button class="btn ghost" id="f-prev">Voltar</button>':''}<button class="btn grow" id="f-next">${step===total-1?(isNew?'Criar projeto 🚀':'Salvar'):'Continuar'}</button></div>
+        ${!isNew?'<button class="btn danger block small" id="f-del" style="margin-top:14px">Excluir projeto</button>':''}`;
+      bg.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ collect(); d.cat=b.dataset.cat; draw(); });
+      bg.querySelectorAll('[data-tpl]').forEach(b=>b.onclick=()=>{ useTpl=b.dataset.tpl==='1'; bg.querySelectorAll('[data-tpl]').forEach(x=>x.classList.toggle('on',x===b)); });
+      const prev=bg.querySelector('#f-prev'); if(prev) prev.onclick=()=>{collect(); step--; draw();};
+      const del=bg.querySelector('#f-del'); if(del) del.onclick=()=>{ if(confirm('Excluir "'+p.name+'" e todas as tarefas?')){ S.projects=S.projects.filter(x=>x.id!==p.id); save(); close(); go('projects'); } };
+      bg.querySelector('#f-next').onclick=()=>{
+        collect();
+        if(step===0 && !d.name.trim()) return toast('Dê um nome ao projeto');
+        if(step<total-1){ step++; return draw(); }
+        if(isNew){
+          const np={id:uid(), name:d.name.trim(), cat:d.cat, goal:d.goal, why:d.why, deadline:d.deadline, created:Date.now(), completed:null, tasks:[]};
+          if(d.first.trim()) np.tasks.push({id:uid(), title:d.first.trim(), weight:1, done:false, subs:[]});
+          if(useTpl) TEMPLATES[d.cat].forEach(x=>np.tasks.push(mkTask(x.t,x.w,x.s)));
+          S.projects.unshift(np); save(); close(); gain(10,'🧭 Projeto criado! +10 XP'); save(); go('projects', np.id);
+        } else { Object.assign(p,{name:d.name.trim(),cat:d.cat,goal:d.goal,why:d.why,deadline:d.deadline}); save(); close(); render(); }
+      };
+      const first=bg.querySelector('input,textarea'); if(first && step>0) setTimeout(()=>first.focus(),150);
+    };
+    const collect=()=>{ ['name','goal','why','deadline','first'].forEach(k=>{ const el=bg.querySelector('#f-'+k); if(el) d[k]=el.value; }); };
+    draw();
+  });
+}
+function mkTask(title, weight, subs){ return {id:uid(), title, weight:Math.min(3,Math.max(1,weight||1)), done:false, subs:(subs||[]).map(s=>({id:uid(), title:String(s), done:false}))}; }
+function applyTemplate(p){
+  TEMPLATES[p.cat].forEach(x=>p.tasks.push(mkTask(x.t,x.w,x.s)));
+  save(); render(); toast('✨ Roteiro adicionado. Ajuste o que quiser!'); checkBadges(); save();
+}
+function openTaskForm(pid, t){
+  const p=S.projects.find(x=>x.id===pid), isNew=!t;
+  let w = t ? t.weight||1 : 1;
+  sheet(`<h2 style="margin-top:0">${isNew?'Nova tarefa':'Editar tarefa'}</h2>
+    <label>O que precisa ser feito?</label><input id="t-title" value="${esc(t?t.title:'')}" placeholder="Comece com um verbo: Criar, Escrever, Enviar…">
+    <label>Esforço</label><div class="chips">${[[1,'● Leve'],[2,'●● Médio'],[3,'●●● Pesado']].map(([k,l])=>`<button class="chip ${w===k?'on':''}" data-w="${k}">${l}</button>`).join('')}</div>
+    ${isNew?`<label>Subtarefas (uma por linha, opcional)</label><textarea id="t-subs" placeholder="Passos de até 25 min&#10;Ex: Pesquisar referências&#10;Ex: Fazer rascunho"></textarea>`:''}
+    <div class="tip">Tarefas pesadas valem mais XP, mas quebre em subtarefas para não travar.</div>
+    <button class="btn block" id="t-save">${isNew?'Adicionar':'Salvar'}</button>
+    ${!isNew?'<button class="btn danger block small" id="t-del" style="margin-top:12px">Excluir tarefa</button>':''}`,
+  (bg, close)=>{
+    bg.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{ w=+b.dataset.w; bg.querySelectorAll('[data-w]').forEach(x=>x.classList.toggle('on',x===b)); });
+    setTimeout(()=>bg.querySelector('#t-title').focus(),150);
+    bg.querySelector('#t-save').onclick=()=>{
+      const title=bg.querySelector('#t-title').value.trim(); if(!title) return toast('Escreva a tarefa');
+      if(isNew){ const subs=(bg.querySelector('#t-subs').value||'').split('\n').map(s=>s.trim()).filter(Boolean); p.tasks.push(mkTask(title,w,subs)); }
+      else { t.title=title; t.weight=w; }
+      save(); close(); checkBadges(); save(); render();
+    };
+    const del=bg.querySelector('#t-del'); if(del) del.onclick=()=>{ p.tasks=p.tasks.filter(x=>x.id!==t.id); S.focus.ids=S.focus.ids.filter(i=>i!==t.id); save(); close(); render(); };
+  });
+}
+
+/* ---------- Integração com o Claude ---------- */
+function projectSummary(p){
+  return `Projeto: ${p.name}\nTipo: ${(CATS[p.cat]||CATS.outro).label}\nResultado final esperado: ${p.goal||'(não definido)'}\nPor que importa: ${p.why||'(não definido)'}\nPrazo: ${p.deadline||'sem prazo'}\nProgresso atual: ${projPct(p)}%\nTarefas atuais:\n${p.tasks.length?p.tasks.map(t=>`- [${t.done?'x':' '}] ${t.title} (esforço ${t.weight||1}/3)${t.subs.length?'\n'+t.subs.map(s=>`    - [${s.done?'x':' '}] ${s.title}`).join('\n'):''}`).join('\n'):'(nenhuma)'}`;
+}
+function claudePrompt(p, extra){
+  return `Estou usando meu app "Rumo" para tirar projetos do papel. Tenho dificuldade de manter o foco, então preciso de tarefas bem concretas.
+
+${projectSummary(p)}
+${extra?'\nObservação: '+extra+'\n':''}
+Crie as PRÓXIMAS tarefas que faltam para concluir o projeto (não repita as que já existem). Regras:
+- 3 a 7 tarefas, em ordem de execução
+- cada tarefa com 2 a 5 subtarefas de até 25 minutos, começando com verbo
+- "weight" = esforço de 1 (leve) a 3 (pesado)
+
+Responda SOMENTE com um bloco JSON neste formato, sem texto antes ou depois:
+{"tasks":[{"title":"...","weight":2,"subs":["...","..."]}]}`;
+}
+function generalReport(){
+  const L=level(S.xp);
+  return `Relatório do meu app Rumo (${today()}):
+Nível ${L.lvl} · ${S.xp} XP · Sequência: ${streak()} dias · Tarefas concluídas: ${S.stats.tasksDone}
+
+${S.projects.map(projectSummary).join('\n\n---\n\n')||'(sem projetos)'}
+
+Com base nisso, me ajude a priorizar a semana: qual projeto devo focar, quais 3 tarefas fazer primeiro e onde estou travando.`;
+}
+async function copyText(txt, msg){
+  try{ await navigator.clipboard.writeText(txt); toast(msg||'Copiado!'); }
+  catch(e){ sheet(`<h2 style="margin-top:0">Copie o texto</h2><textarea style="min-height:260px" readonly>${esc(txt)}</textarea>`, bg=>{ const ta=bg.querySelector('textarea'); ta.focus(); ta.select(); }); }
+}
+function openClaude(p){
+  sheet(`<h2 style="margin-top:0">🧠 Planejar com o Claude</h2>
+    <p class="muted"><b>1.</b> Copie o pedido · <b>2.</b> Cole no app do Claude · <b>3.</b> Copie a resposta e cole aqui embaixo</p>
+    <label>Algo a acrescentar? (opcional)</label><input id="c-extra" placeholder="Ex: tenho só 1h por dia, sou iniciante em programação">
+    <button class="btn block" id="c-copy" style="margin-top:10px">📋 Copiar pedido para o Claude</button>
+    <a class="btn ghost block" href="https://claude.ai/new" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;margin-top:8px">Abrir o Claude ↗</a>
+    <label>Resposta do Claude</label><textarea id="c-resp" style="min-height:140px" placeholder='Cole aqui o JSON: {"tasks":[...]}'></textarea>
+    <button class="btn block" id="c-import" style="margin-top:10px">⬇ Importar tarefas</button>`,
+  (bg, close)=>{
+    bg.querySelector('#c-copy').onclick=()=>copyText(claudePrompt(p, bg.querySelector('#c-extra').value.trim()), 'Pedido copiado! Cole no Claude.');
+    bg.querySelector('#c-import').onclick=()=>{
+      const raw=bg.querySelector('#c-resp').value; const tasks=parseClaude(raw);
+      if(!tasks) return toast('Não reconheci o formato. Cole apenas a resposta do Claude.');
+      tasks.forEach(x=>p.tasks.push(mkTask(String(x.title||x.titulo||'Tarefa'), +x.weight||+x.peso||1, x.subs||x.subtasks||x.subtarefas||[])));
+      S.stats.imports++; save(); close(); gain(15, '🧠 '+tasks.length+' tarefas importadas! +15 XP'); save(); render();
+    };
+  });
+}
+function parseClaude(raw){
+  if(!raw) return null;
+  let s=raw.replace(/```(?:json)?/gi,'').trim();
+  const a=s.indexOf('{'), b=s.lastIndexOf('}'), a2=s.indexOf('[');
+  try{
+    if(a>=0 && (a2<0 || a<a2)){ const o=JSON.parse(s.slice(a,b+1)); const t=o.tasks||o.tarefas; return Array.isArray(t)&&t.length?t:null; }
+    if(a2>=0){ const arr=JSON.parse(s.slice(a2, s.lastIndexOf(']')+1)); return Array.isArray(arr)&&arr.length?arr:null; }
+  }catch(e){}
+  // fallback: lista em texto ("- Tarefa" / "  - sub")
+  const lines=raw.split('\n').filter(l=>/^\s*([-*•]|\d+[.)])\s+/.test(l)); if(!lines.length) return null;
+  const out=[]; lines.forEach(l=>{ const txt=l.replace(/^\s*([-*•]|\d+[.)])\s+(\[.\]\s*)?/,'').trim(); if(/^\s{2,}|^\t/.test(l) && out.length) out[out.length-1].subs.push(txt); else out.push({title:txt, weight:1, subs:[]}); });
+  return out;
+}
+
+/* ---------- Backup ---------- */
+function exportData(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='rumo-backup-'+today()+'.json'; document.body.appendChild(a); a.click(); a.remove();
+  toast('Backup gerado');
+}
+function importData(e){
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!Array.isArray(d.projects)) throw 0; if(confirm('Substituir os dados atuais pelo backup?')){ S=Object.assign(fresh(), d); save(); go('home'); toast('Backup restaurado'); } }catch(err){ toast('Arquivo inválido'); } };
+  r.readAsText(file);
+}
+
+/* ---------- Início ---------- */
+window.addEventListener('online', ()=>{ toast('On-line'); if(view.tab==='settings') render(); });
+window.addEventListener('offline', ()=>{ toast('Off-line — tudo continua funcionando'); if(view.tab==='settings') render(); });
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', ()=>S.theme==='auto'&&applyTheme());
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) render(); });
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
+render();
+</script>
+</body>
+</html>
